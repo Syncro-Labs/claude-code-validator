@@ -356,9 +356,11 @@ When using with Claude Code hooks:
 
 ## Examples
 
-See the `/validators` directory for real-world examples:
-- `nuxt-ui.ts` - Validate Nuxt UI component usage
-- `define-model.ts` - Enforce Vue 3 defineModel() usage
+See the `docs/4.examples/` directory for real-world examples:
+- Nuxt UI validation - Validate Nuxt UI component usage and v4 migration
+- Vue defineModel - Enforce Vue 3 defineModel() usage
+- Security rules - Security pattern validation
+- Code quality rules - Code quality enforcement
 
 ## Testing
 
@@ -387,11 +389,21 @@ describe('My Rule', () => {
 
 To add new validation rules:
 
-1. Create your rule in `rules/your-rule.ts`
-2. Register it in `rules/index.ts`
-3. Add tests in `tests/your-rule.test.ts`
-4. Run `bun test` to verify
+1. Create your rule in `.claude/rules/your-rule.ts`
+2. Rules are automatically discovered - no manual registration needed
+3. Add tests in `tests/your-rule.test.ts` (optional, but recommended)
+4. Run `bun run typecheck` to verify TypeScript types
+5. Test manually using `bun run list-rules` to verify auto-discovery
+
+## Scripts
+
+The following npm scripts are available:
+
+- `bun run validate` - Run validation from stdin
+- `bun run list-rules` - List all discovered validation rules
+- `bun run typecheck` - Run TypeScript type checking
+- `bun run test` - Run tests (requires test runner setup)
 
 ## License
 
-This framework is part of the Claude Code ecosystem.
+MIT - See [LICENSE](LICENSE) for details.
