@@ -1,0 +1,26 @@
+{
+  "name": "claude-code-validator",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Extensible validation framework for Claude Code hooks",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types/index.ts",
+    "./core": "./src/core/validator.ts"
+  },
+  "keywords": [
+    "claude-code",
+    "validation",
+    "hooks",
+    "framework"
+  ],
+  "dependencies": {
+    "hookable": "^5.5.3",
+    "citty": "^0.1.6",
+    "glob": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
