@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# SessionStart hook for Claude Code
+# Automatically sets up the validation framework when a session starts
+
+set -e
+
+echo "🚀 Setting up Claude Code Validator..."
+
+# Check if we're in the project root
+if [ ! -f "package.json" ]; then
+  echo "⚠️  Warning: Not in project root, skipping setup"
+  exit 0
+fi
+
+# Install dependencies if node_modules doesn't exist
+if [ ! -d "node_modules" ]; then
+  echo "📦 Installing dependencies..."
+  if command -v pnpm &> /dev/null; then
+    pnpm install --silent
+  elif command -v bun &> /dev/null; then
+    bun install --silent
+  elif command -v npm &> /dev/null; then
+    npm install --silent
+  else
+    echo "❌ No package manager found (pnpm, bun, or npm required)"
+    exit 1
+  fi
+  echo "✅ Dependencies installed"
+else
+  echo "✅ Dependencies already installed"
+fi
+
+# Run TypeScript type checking
+echo "🔍 Running type check..."
+if npm run typecheck --silent 2>&1 | grep -q "error"; then
+  echo "❌ Type check failed"
+  exit 1
+fi
+echo "✅ Type check passed"
+
+# Check for .claude/rules directory and provide helpful message
+if [ ! -d ".claude/rules" ]; then
+  echo ""
+  echo "ℹ️  No .claude/rules directory found."
+  echo "   Create validation rules in .claude/rules/ to get started."
+  echo "   See docs/ for examples."
+else
+  # List discovered rules
+  echo ""
+  echo "📋 Discovered validation rules:"
+  npm run list-rules --silent 2>/dev/null || echo "   (none found)"
+fi
+
+echo ""
+echo "✅ Claude Code Validator ready!"
+echo ""

@@ -65,19 +65,41 @@ List all discovered rules:
 bun .claude/claude-code-validator/src/cli.ts list-rules --rulesDir=.claude/rules
 ```
 
-### 3. Integrate with Claude Code Hooks
+### 3. Set Up Automatic Initialization (Optional)
+
+The framework includes a SessionStart hook that automatically sets up the environment when Claude Code starts:
+
+```bash
+# Copy the example settings to enable SessionStart hook
+cp .claude/settings.example.json .claude/settings.local.json
+```
+
+The SessionStart hook will:
+- ✅ Install dependencies if missing
+- ✅ Run type checking to verify code quality
+- ✅ List discovered validation rules
+- ✅ Provide setup status feedback
+
+### 4. Integrate with Claude Code Hooks
 
 Configure in `.claude/settings.local.json`:
 
 ```json
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/SessionStart",
+        "timeout": 30
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Edit",
         "hooks": [{
           "type": "command",
-          "command": "bun ${CLAUDE_PROJECT_DIR}/.claude/claude-code-validator/src/cli.ts validate --stdin",
+          "command": "bun ${CLAUDE_PROJECT_DIR}/src/cli.ts validate --stdin",
           "timeout": 10
         }]
       },
@@ -85,7 +107,7 @@ Configure in `.claude/settings.local.json`:
         "matcher": "Write",
         "hooks": [{
           "type": "command",
-          "command": "bun ${CLAUDE_PROJECT_DIR}/.claude/claude-code-validator/src/cli.ts validate --stdin",
+          "command": "bun ${CLAUDE_PROJECT_DIR}/src/cli.ts validate --stdin",
           "timeout": 10
         }]
       }
