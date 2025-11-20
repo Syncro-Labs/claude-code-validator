@@ -6,7 +6,8 @@
     "build": "undocs build"
   },
   "devDependencies": {
-    "undocs": "latest"
+    "undocs": "latest",
+    "better-sqlite3": "latest"
   },
   "overrides": {
     "nuxi": "3.28.0"
