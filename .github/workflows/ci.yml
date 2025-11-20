@@ -43,7 +43,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event.release.tag_name }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -51,23 +51,10 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Extract version from tag
-        id: version
-        run: |
-          # Remove 'v' prefix if present (e.g., v1.0.0 -> 1.0.0)
-          VERSION=${GITHUB_REF_NAME#v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Publishing version: $VERSION"
-
-      - name: Verify package.json version matches tag
+      - name: Verify package version
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          TAG_VERSION="${{ steps.version.outputs.version }}"
-          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
-            echo "❌ Error: package.json version ($PACKAGE_VERSION) doesn't match tag ($TAG_VERSION)"
-            exit 1
-          fi
-          echo "✅ Version check passed: $PACKAGE_VERSION"
+          echo "Publishing version: $PACKAGE_VERSION"
 
       - name: Setup Node.js for npm
         uses: actions/setup-node@v4
