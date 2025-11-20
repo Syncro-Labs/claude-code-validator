@@ -1,73 +1,65 @@
-# Claude Code Validator Framework
+# Claude Code Validator
 
-An extensible, TypeScript-based validation framework designed for Claude Code hooks. Build custom code validators with ease using a hookable, rule-based architecture.
+> Teach Claude your project's coding rules and best practices
 
-## Features
+## What is this?
 
-- 🎯 **Rule-based validation** - Create modular, composable validation rules
-- 🪝 **Hookable architecture** - Tap into validation lifecycle with custom hooks
-- 📝 **TypeScript-first** - Fully typed for excellent DX
-- 🔌 **Claude Code integration** - Built specifically for Claude Code hooks
-- ⚡ **Async support** - Run async validation rules seamlessly
-- 🧪 **Testable** - Easy to unit test your validation rules
-- 🔍 **Auto-discovery** - Automatically loads rules from `.claude/rules/**`
-- 🛠️ **CLI included** - Command-line interface for validation and rule management
+Claude Code Validator helps you prevent common mistakes by checking code **before** Claude writes it. Instead of fixing errors after they happen, you define rules that block outdated patterns automatically.
 
-## Installation
+**Example use cases:**
+- Prevent deprecated component usage during framework migrations
+- Enforce your team's coding conventions
+- Block security anti-patterns
+- Ensure consistent code quality
 
-This framework is designed to be used within a Claude Code project:
+## Why use it?
 
-```bash
-cd .claude/claude-code-validator
-bun install
-```
+- ✅ **Automatic** - Rules are discovered and applied automatically
+- ✅ **Fast** - Validates in milliseconds before code is written
+- ✅ **Simple** - Write rules in TypeScript with clear examples
+- ✅ **Flexible** - Works with any file type or coding pattern
+- ✅ **Zero config** - Drop rule files in `.claude/rules/` and they just work
 
 ## Quick Start
 
-### 1. Create a Validation Rule
+### Step 1: Install the package
 
-Create a rule file in `.claude/rules/`:
+```bash
+# Install as a dev dependency in your project
+npm install -D claude-code-validator
+# or
+bun add -d claude-code-validator
+# or
+pnpm add -D claude-code-validator
+```
+
+### Step 2: Create your first rule
+
+Create `.claude/rules/no-console.ts`:
 
 ```typescript
-// .claude/rules/my-rule.ts
-import { defineCodeRule } from '../claude-code-validator';
+import { defineCodeRule } from 'claude-code-validator';
 
-export const myRule = defineCodeRule({
-  name: 'my-rule',
-  description: 'Validates my specific pattern',
+export const noConsole = defineCodeRule({
+  name: 'no-console',
+  description: 'Prevent console.log in production code',
 
-  shouldRun: (context) => {
-    // Only run on TypeScript files
-    return context.filePath.endsWith('.ts');
-  },
+  shouldRun: (context) => context.filePath.endsWith('.ts'),
 
   validate(context) {
-    const errors: string[] = [];
-
-    if (context.content.includes('bad-pattern')) {
-      errors.push(
-        `❌ Found bad pattern\n` +
-        `   → Suggested fix here\n` +
-        `   📄 File: ${context.filePath}`
-      );
+    if (context.content.includes('console.log')) {
+      return ['❌ Found console.log - use proper logging instead'];
     }
-
-    return errors;
+    return [];
   }
 });
 ```
 
-### 2. Test Auto-Discovery
+That's it! The rule is automatically discovered.
 
-List all discovered rules:
+### Step 3: Enable validation hooks
 
-```bash
-bun .claude/claude-code-validator/src/cli.ts list-rules --rulesDir=.claude/rules
-```
-
-### 3. Integrate with Claude Code Hooks
-
-Configure in `.claude/settings.local.json`:
+Create `.claude/settings.local.json`:
 
 ```json
 {
@@ -77,7 +69,7 @@ Configure in `.claude/settings.local.json`:
         "matcher": "Edit",
         "hooks": [{
           "type": "command",
-          "command": "bun ${CLAUDE_PROJECT_DIR}/.claude/claude-code-validator/src/cli.ts validate --stdin",
+          "command": "bunx claude-code-validator validate",
           "timeout": 10
         }]
       },
@@ -85,7 +77,7 @@ Configure in `.claude/settings.local.json`:
         "matcher": "Write",
         "hooks": [{
           "type": "command",
-          "command": "bun ${CLAUDE_PROJECT_DIR}/.claude/claude-code-validator/src/cli.ts validate --stdin",
+          "command": "bunx claude-code-validator validate",
           "timeout": 10
         }]
       }
@@ -94,172 +86,132 @@ Configure in `.claude/settings.local.json`:
 }
 ```
 
-## CLI Usage
+This enables validation on every code change before Claude writes it.
 
-The framework includes a command-line interface for validation and rule management.
+## How It Works
 
-### Validate Command
+When Claude Code tries to write or edit a file:
 
-Validates code from Claude Code hooks via stdin:
+1. **Your rules are checked** - Only rules matching the file type run
+2. **Errors block the operation** - If validation fails, Claude sees the error
+3. **Claude fixes it** - Claude can see what's wrong and try again with the correct pattern
 
-```bash
-bun .claude/claude-code-validator/src/cli.ts validate --stdin
-```
+**Example:** If Claude tries to use `<UFormGroup>` (deprecated in Nuxt UI v4), your rule blocks it and suggests `<UFormField>` instead.
 
-Options:
-- `--stdin` - Read input from stdin (default: true)
-- `--rulesDir` - Directory containing rules (default: `.claude/rules`)
+## Configuration Reference
 
-Example with custom rules directory:
-```bash
-bun .claude/claude-code-validator/src/cli.ts validate --stdin --rulesDir=custom/rules
-```
+Your `.claude/settings.local.json` should look like this:
 
-### List Rules Command
-
-Lists all discovered validation rules:
-
-```bash
-bun .claude/claude-code-validator/src/cli.ts list-rules
-```
-
-Options:
-- `--rulesDir` - Directory containing rules (default: `.claude/rules`)
-
-Example output:
-```
-📋 Discovered 2 Validation Rules from .claude/rules:
-
-  • nuxt-ui
-    Validate Nuxt UI component usage and patterns
-
-  • define-model
-    Enforce use of defineModel() macro instead of modelValue prop + emit pattern
-```
-
-## Core Concepts
-
-### ValidationContext
-
-Every validation rule receives a context object:
-
-```typescript
-interface ValidationContext {
-  toolName: string;      // 'Edit' | 'Write' | etc.
-  filePath: string;      // Path to the file
-  content: string;       // Current/new content
-  oldContent?: string;   // Previous content (Edit only)
-  operation: 'edit' | 'write';
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [{
+          "type": "command",
+          "command": "bunx claude-code-validator validate",
+          "timeout": 10
+        }]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [{
+          "type": "command",
+          "command": "bunx claude-code-validator validate",
+          "timeout": 10
+        }]
+      }
+    ]
+  }
 }
 ```
 
-### ValidationRule
+## Common Commands
 
-A rule defines what to check and when:
+```bash
+# List all discovered rules
+bunx claude-code-validator list-rules
 
+# Manually validate from stdin (for testing)
+echo '{"tool_name":"Write","tool_input":{"file_path":"test.ts","content":"test"}}' | \
+  bunx claude-code-validator validate
+```
+
+## Writing Rules
+
+Every rule has three parts:
+
+### 1. Name and Description
 ```typescript
-interface ValidationRule {
-  name: string;
-  description: string;
-  shouldRun: (context: ValidationContext) => boolean;
-  validate: (context: ValidationContext) => Promise<string[]> | string[];
+name: 'my-rule',
+description: 'What this rule checks for',
+```
+
+### 2. When to Run
+```typescript
+shouldRun: (context) => {
+  return context.filePath.endsWith('.vue'); // Only check Vue files
 }
 ```
 
-### ValidationResult
-
-The validator returns a result with errors and formatting:
-
+### 3. What to Check
 ```typescript
-interface ValidationResult {
-  valid: boolean;
-  errors: string[];
-  formatErrors: () => string;
+validate(context) {
+  if (context.content.includes('bad-thing')) {
+    return ['❌ Error message explaining what's wrong'];
+  }
+  return []; // Empty array = validation passed
 }
 ```
 
-## Advanced Usage
+The `context` object gives you:
+- `context.filePath` - The file being edited
+- `context.content` - The new code being written
+- `context.oldContent` - The previous code (for edits only)
 
-### Custom Hooks
+## More Examples
 
-Tap into the validation lifecycle:
-
-```typescript
-const validator = createValidator();
-const hooks = validator.getHooks();
-
-// Before validation starts
-hooks.hook('validate:before', (context) => {
-  console.log('Validating:', context.filePath);
-});
-
-// After validation completes
-hooks.hook('validate:after', (context, errors) => {
-  console.log(`Found ${errors.length} errors`);
-});
-
-// Hook into specific rule
-hooks.hook('validate:my-rule', (context) => {
-  // Custom logic for this rule
-});
-```
-
-### Async Validation
-
-Rules can be async for complex validation:
+### Check for Multiple Patterns
 
 ```typescript
-import { defineCodeRule } from '../claude-code-validator';
-
-export const asyncRule = defineCodeRule({
-  name: 'async-rule',
-  description: 'Performs async validation',
-
+export const securityRule = defineCodeRule({
+  name: 'security',
+  description: 'Block common security issues',
   shouldRun: () => true,
 
-  async validate(context) {
-    // Fetch external data, run linters, etc.
-    const result = await someAsyncOperation(context.content);
+  validate(context) {
+    const errors = [];
 
-    if (!result.valid) {
-      return [result.error];
+    if (context.content.includes('eval(')) {
+      errors.push('❌ eval() is dangerous - use safer alternatives');
     }
 
-    return [];
+    if (context.content.match(/password.*=.*['"].*['"]/i)) {
+      errors.push('❌ Hardcoded password detected');
+    }
+
+    return errors;
   }
 });
 ```
 
-### Pattern-Based Rules
-
-For simple regex-based validation:
+### Use Regular Expressions
 
 ```typescript
-import { defineCodeRule } from '../claude-code-validator';
-import type { PatternRule } from '../claude-code-validator';
+export const componentRule = defineCodeRule({
+  name: 'deprecated-components',
+  description: 'Block deprecated components',
+  shouldRun: (context) => context.filePath.endsWith('.vue'),
 
-const patterns: PatternRule[] = [
-  {
-    regex: /OldAPI/,
-    message: '❌ OldAPI is deprecated',
-    replacement: 'NewAPI'
-  }
-];
-
-export const patternRule = defineCodeRule({
-  name: 'pattern-rule',
-  description: 'Pattern-based validation',
-  shouldRun: (context) => context.filePath.endsWith('.ts'),
   validate(context) {
-    const errors: string[] = [];
+    const deprecated = ['OldButton', 'OldInput', 'OldForm'];
+    const errors = [];
 
-    for (const { regex, message, replacement } of patterns) {
-      if (regex.test(context.content)) {
-        let error = message;
-        if (replacement) {
-          error += `\n   → Use: ${replacement}`;
-        }
-        errors.push(error);
+    for (const component of deprecated) {
+      const pattern = new RegExp(`<${component}`);
+      if (pattern.test(context.content)) {
+        errors.push(`❌ <${component}> is deprecated - use the new component`);
       }
     }
 
@@ -268,130 +220,110 @@ export const patternRule = defineCodeRule({
 });
 ```
 
-## Architecture
-
-```
-.claude/
-├── claude-code-validator/    # Framework (not in end user projects)
-│   ├── src/
-│   │   ├── core/
-│   │   │   └── validator.ts      # Core validation engine with defineCodeValidator()
-│   │   ├── types/
-│   │   │   └── index.ts          # TypeScript interfaces + defineCodeRule()
-│   │   ├── utils/
-│   │   │   └── rule-loader.ts    # Auto-discovery utility with loadRules()
-│   │   ├── cli.ts                # CLI interface (validate, list-rules)
-│   │   └── index.ts              # Main exports
-│   ├── package.json              # Dependencies (hookable, citty, glob)
-│   └── README.md
-│
-└── rules/                        # User-defined rules (auto-discovered)
-    ├── nuxt-ui.ts                # Nuxt UI validation rules
-    ├── define-model.ts           # Vue defineModel enforcement
-    └── my-custom-rule.ts         # Your custom rules
-```
-
-The framework is designed to be:
-- **Minimal** - Only core validation logic
-- **Extensible** - Add rules and hooks easily
-- **Reusable** - Use across different validation scenarios
-- **Auto-discovering** - Automatically finds and loads rules from `.claude/rules/`
-
-## API Reference
-
-### defineCodeValidator()
-
-Creates a new validator instance (ecosystem naming convention).
+### Async Rules (Advanced)
 
 ```typescript
-import { defineCodeValidator } from '../claude-code-validator';
+export const asyncRule = defineCodeRule({
+  name: 'async-check',
+  description: 'Fetch validation data asynchronously',
+  shouldRun: () => true,
 
-const validator = defineCodeValidator();
+  async validate(context) {
+    // Make API calls, read files, etc.
+    const bannedWords = await fetchBannedWords();
+
+    for (const word of bannedWords) {
+      if (context.content.includes(word)) {
+        return [`❌ Banned word detected: ${word}`];
+      }
+    }
+
+    return [];
+  }
+});
 ```
 
-Returns a `Validator` with methods:
-- `registerRule(rule)` - Register a validation rule
-- `validate(input)` - Validate Claude Code hook input
-- `parseInput(input)` - Parse hook input to ValidationContext
-- `getRules()` - Get all registered rules
-- `getHooks()` - Get hookable instance for custom hooks
+## Project Structure
 
-### defineCodeRule()
+```
+your-project/
+└── .claude/
+    ├── rules/                    # Your validation rules (put rules here)
+    │   ├── no-console.ts
+    │   ├── security.ts
+    │   └── your-custom-rule.ts
+    │
+    ├── claude-code-validator/    # The framework
+    │   ├── src/                  # Framework code
+    │   └── package.json
+    │
+    └── settings.local.json       # Claude Code hook configuration
+```
 
-Define a validation rule with type safety and auto-completion.
+**Where to put things:**
+- ✅ Your rules → `.claude/rules/`
+- ✅ Framework → `.claude/claude-code-validator/` (already there)
+- ✅ Configuration → `.claude/settings.local.json`
+
+## API Quick Reference
+
+Most users only need `defineCodeRule()`:
 
 ```typescript
-import { defineCodeRule } from '../claude-code-validator';
+import { defineCodeRule } from 'claude-code-validator';
 
 export const myRule = defineCodeRule({
-  name: 'my-rule',
-  description: 'Description of the rule',
-  shouldRun: (context) => true,
-  validate: (context) => []
+  name: 'rule-name',
+  description: 'What it checks',
+  shouldRun: (context) => /* when to run */,
+  validate: (context) => /* what to check */
 });
 ```
 
-### loadRules()
+**Advanced users** can access:
+- `defineCodeValidator()` - Create custom validator instances
+- `loadRules(dir)` - Manually load rules from a directory
+- Full TypeScript types for ValidationContext, ValidationRule, etc.
 
-Auto-discovers and loads validation rules from a directory.
+## Real-World Examples
 
-```typescript
-import { loadRules } from '../claude-code-validator';
+Check `docs/4.examples/` for production-ready validation rules:
+- **Nuxt UI** - Enforce v4 migration patterns
+- **Vue defineModel** - Replace old prop patterns
+- **Security** - Block common vulnerabilities
+- **Code quality** - Maintain code standards
 
-const rules = await loadRules('.claude/rules');
-```
-
-Returns `Promise<ValidationRule[]>`
-
-### createValidator() (deprecated)
-
-Legacy alias for `defineCodeValidator()`. Prefer using `defineCodeValidator()` for consistency with ecosystem naming conventions.
-
-### Exit Codes
-
-When using with Claude Code hooks:
-- `0` - Validation passed
-- `2` - Validation failed (blocks the operation)
-- `1` - Error running validator
-
-## Examples
-
-See the `/validators` directory for real-world examples:
-- `nuxt-ui.ts` - Validate Nuxt UI component usage
-- `define-model.ts` - Enforce Vue 3 defineModel() usage
-
-## Testing
-
-The framework is designed to be easily testable:
+## Testing Your Rules (Optional)
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { myRule } from './my-rule';
+// Test your rule like any other function
+const context = {
+  toolName: 'Write',
+  filePath: 'test.ts',
+  content: 'console.log("test")',
+  operation: 'write' as const
+};
 
-describe('My Rule', () => {
-  it('should detect bad pattern', () => {
-    const context = {
-      toolName: 'Write',
-      filePath: 'test.ts',
-      content: 'bad-pattern here',
-      operation: 'write' as const
-    };
-
-    const errors = myRule.validate(context);
-    expect(errors).toHaveLength(1);
-  });
-});
+const errors = myRule.validate(context);
+console.log(errors); // ['❌ Found console.log...']
 ```
 
-## Contributing
+## Troubleshooting
 
-To add new validation rules:
+**Rules not being discovered?**
+- Make sure files are in `.claude/rules/`
+- Run `bun run list-rules` to see what's found
+- Check that you're exporting the rule (`export const myRule = ...`)
 
-1. Create your rule in `rules/your-rule.ts`
-2. Register it in `rules/index.ts`
-3. Add tests in `tests/your-rule.test.ts`
-4. Run `bun test` to verify
+**Validation not running?**
+- Verify `.claude/settings.local.json` exists
+- Check that the SessionStart hook ran successfully
+- Ensure dependencies are installed (`bun install`)
+
+**Type errors?**
+- Run `bun run typecheck` to see detailed errors
+- Make sure you imported from the correct path
 
 ## License
 
-This framework is part of the Claude Code ecosystem.
+MIT - See [LICENSE](LICENSE) for details.
