@@ -1,14 +1,14 @@
 ---
 seo:
-  title: Claude Code Validator Framework
-  description: An extensible, TypeScript-based validation framework for Claude Code hooks. Build custom code validators with ease using a hookable, rule-based architecture.
+  title: Claude Code Validator - Teach Claude Your Coding Rules
+  description: Prevent mistakes before they happen. Validate code patterns automatically as Claude writes, blocking deprecated APIs and enforcing your team's best practices.
 ---
 
 # Claude Code Validator
 
-> An extensible validation framework for Claude Code hooks that prevents outdated code patterns and enforces best practices.
+> Teach Claude your project's coding rules and best practices
 
-Claude Code is powerful, but sometimes it may write outdated patterns or not follow your specific conventions. This framework provides automated validation and feedback before code is written.
+**Stop fixing the same mistakes.** Claude Code Validator checks code patterns **before** Claude writes them, blocking outdated APIs, security issues, and style violations automatically.
 
 ## Features
 
@@ -64,36 +64,30 @@ Easy to unit test your validation rules with standard testing frameworks
 
 ## Quick Example
 
-Create a validation rule in `.claude/rules/my-rule.ts`:
+Install the package:
+```bash
+npm install -D claude-code-validator
+```
+
+Create `.claude/rules/no-console.ts`:
 
 ```typescript
-import { defineCodeRule } from '../claude-code-validator';
+import { defineCodeRule } from 'claude-code-validator';
 
-export const myRule = defineCodeRule({
-  name: 'my-rule',
-  description: 'Validates my specific pattern',
-
-  shouldRun: (context) => {
-    return context.filePath.endsWith('.ts');
-  },
-
+export const noConsole = defineCodeRule({
+  name: 'no-console',
+  description: 'Block console.log in production',
+  shouldRun: (context) => context.filePath.endsWith('.ts'),
   validate(context) {
-    const errors: string[] = [];
-
-    if (context.content.includes('bad-pattern')) {
-      errors.push(
-        `❌ Found bad pattern\n` +
-        `   → Suggested fix here\n` +
-        `   📄 File: ${context.filePath}`
-      );
+    if (context.content.includes('console.log')) {
+      return ['❌ Use proper logging instead of console.log'];
     }
-
-    return errors;
+    return [];
   }
 });
 ```
 
-The rule is automatically discovered and loaded. No manual registration required!
+**That's it!** The rule is automatically discovered. When Claude tries to write `console.log`, it sees the error and uses proper logging instead.
 
 ## Use Cases
 

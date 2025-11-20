@@ -3,17 +3,35 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Extensible validation framework for Claude Code hooks",
+  "author": "Syncro Labs",
   "main": "src/index.ts",
+  "bin": {
+    "claude-code-validator": "./src/cli.ts"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./types": "./src/types/index.ts",
     "./core": "./src/core/validator.ts"
   },
+  "files": [
+    "src",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "validate": "bun src/cli.ts validate --stdin",
+    "list-rules": "bun src/cli.ts list-rules",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Error: no test runner configured\" && exit 1"
+  },
   "keywords": [
     "claude-code",
     "validation",
     "hooks",
-    "framework"
+    "framework",
+    "typescript",
+    "bun"
   ],
   "repository": {
     "type": "git",
