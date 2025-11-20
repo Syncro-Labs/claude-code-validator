@@ -5,7 +5,7 @@
         "matcher": "Edit",
         "hooks": [{
           "type": "command",
-          "command": "bunx claude-code-validator validate",
+          "command": "bunx @syncrolabs/claude-code-validator validate",
           "timeout": 10
         }]
       },
@@ -13,7 +13,7 @@
         "matcher": "Write",
         "hooks": [{
           "type": "command",
-          "command": "bunx claude-code-validator validate",
+          "command": "bunx @syncrolabs/claude-code-validator validate",
           "timeout": 10
         }]
       }

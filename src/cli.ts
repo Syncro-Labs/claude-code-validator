@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { defineCommand, runMain } from "citty";
 import { defineCodeValidator } from "./core/validator";
-import { loadRules } from "./utils/rule-loader";
+import { loadRules, findProjectRoot } from "./utils/rule-loader";
 import path from "path";
 
 const validateCommand = defineCommand({
@@ -23,8 +23,16 @@ const validateCommand = defineCommand({
   async run({ args }) {
     const validator = defineCodeValidator();
 
+    // Find project root (searches upward for .claude directory)
+    const projectRoot = findProjectRoot();
+    if (!projectRoot) {
+      console.error(`❌ Could not find .claude directory in current or parent directories`);
+      console.error(`   Make sure you have a .claude/ directory in your project root`);
+      process.exit(1);
+    }
+
     // Auto-discover and register rules
-    const rulesPath = path.resolve(process.cwd(), args.rulesDir);
+    const rulesPath = path.resolve(projectRoot, args.rulesDir);
     const rules = await loadRules(rulesPath);
 
     if (rules.length === 0) {
@@ -79,7 +87,15 @@ const listRulesCommand = defineCommand({
     },
   },
   async run({ args }) {
-    const rulesPath = path.resolve(process.cwd(), args.rulesDir);
+    // Find project root (searches upward for .claude directory)
+    const projectRoot = findProjectRoot();
+    if (!projectRoot) {
+      console.error(`\n❌ Could not find .claude directory in current or parent directories\n`);
+      console.error(`   Make sure you have a .claude/ directory in your project root\n`);
+      process.exit(1);
+    }
+
+    const rulesPath = path.resolve(projectRoot, args.rulesDir);
     const rules = await loadRules(rulesPath);
 
     if (rules.length === 0) {

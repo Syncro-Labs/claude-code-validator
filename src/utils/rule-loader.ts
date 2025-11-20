@@ -1,5 +1,27 @@
 import { glob } from 'glob';
+import { existsSync } from 'fs';
+import { dirname, join, resolve } from 'path';
 import type { ValidationRule } from '../types';
+
+/**
+ * Find the project root by searching upward for a .claude directory
+ * @param startDir - Directory to start searching from (defaults to cwd)
+ * @returns Path to project root, or null if not found
+ */
+export function findProjectRoot(startDir: string = process.cwd()): string | null {
+  let currentDir = resolve(startDir);
+  const root = '/';
+
+  while (currentDir !== root) {
+    const claudeDir = join(currentDir, '.claude');
+    if (existsSync(claudeDir)) {
+      return currentDir;
+    }
+    currentDir = dirname(currentDir);
+  }
+
+  return null;
+}
 
 /**
  * Auto-discover and load validation rules from a directory

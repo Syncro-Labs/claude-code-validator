@@ -69,7 +69,7 @@ Create `.claude/settings.local.json`:
         "matcher": "Edit",
         "hooks": [{
           "type": "command",
-          "command": "bunx claude-code-validator validate",
+          "command": "bunx @syncrolabs/claude-code-validator validate",
           "timeout": 10
         }]
       },
@@ -77,7 +77,7 @@ Create `.claude/settings.local.json`:
         "matcher": "Write",
         "hooks": [{
           "type": "command",
-          "command": "bunx claude-code-validator validate",
+          "command": "bunx @syncrolabs/claude-code-validator validate",
           "timeout": 10
         }]
       }
@@ -110,7 +110,7 @@ Your `.claude/settings.local.json` should look like this:
         "matcher": "Edit",
         "hooks": [{
           "type": "command",
-          "command": "bunx claude-code-validator validate",
+          "command": "bunx @syncrolabs/claude-code-validator validate",
           "timeout": 10
         }]
       },
@@ -118,7 +118,7 @@ Your `.claude/settings.local.json` should look like this:
         "matcher": "Write",
         "hooks": [{
           "type": "command",
-          "command": "bunx claude-code-validator validate",
+          "command": "bunx @syncrolabs/claude-code-validator validate",
           "timeout": 10
         }]
       }
@@ -131,11 +131,11 @@ Your `.claude/settings.local.json` should look like this:
 
 ```bash
 # List all discovered rules
-bunx claude-code-validator list-rules
+bunx @syncrolabs/claude-code-validator list-rules
 
 # Manually validate from stdin (for testing)
 echo '{"tool_name":"Write","tool_input":{"file_path":"test.ts","content":"test"}}' | \
-  bunx claude-code-validator validate
+  bunx @syncrolabs/claude-code-validator validate
 ```
 
 ## Writing Rules
