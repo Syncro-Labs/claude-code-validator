@@ -1,6 +1,6 @@
 {
   "name": "@syncrolabs/claude-code-validator",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "description": "Extensible validation framework for Claude Code hooks",
   "author": "SyncroLabs",
