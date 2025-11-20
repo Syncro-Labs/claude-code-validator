@@ -1,6 +1,6 @@
 {
   "name": "@syncrolabs/claude-code-validator",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "description": "Extensible validation framework for Claude Code hooks",
   "author": "SyncroLabs",
@@ -35,7 +35,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Syncro-Labs/claude-code-validator.git"
+    "url": "git+https://github.com/Syncro-Labs/claude-code-validator.git"
   },
   "bugs": {
     "url": "https://github.com/Syncro-Labs/claude-code-validator/issues"
