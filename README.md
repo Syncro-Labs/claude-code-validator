@@ -97,7 +97,7 @@ Your `.claude/settings.local.json` should look like this:
         "matcher": "Edit",
         "hooks": [{
           "type": "command",
-          "command": "bun ${CLAUDE_PROJECT_DIR}/src/cli.ts validate --stdin",
+          "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/claude-code-validator/validate validate --stdin",
           "timeout": 10
         }]
       },
@@ -105,7 +105,7 @@ Your `.claude/settings.local.json` should look like this:
         "matcher": "Write",
         "hooks": [{
           "type": "command",
-          "command": "bun ${CLAUDE_PROJECT_DIR}/src/cli.ts validate --stdin",
+          "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/claude-code-validator/validate validate --stdin",
           "timeout": 10
         }]
       }
