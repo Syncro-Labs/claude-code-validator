@@ -22,14 +22,15 @@ Claude Code Validator helps you prevent common mistakes by checking code **befor
 
 ## Quick Start
 
-### Step 1: Install
+### Step 1: Install the package
 
 ```bash
-# Navigate to the validator directory
-cd .claude/claude-code-validator
-
-# Install dependencies
-bun install
+# Install as a dev dependency in your project
+npm install -D claude-code-validator
+# or
+bun add -d claude-code-validator
+# or
+pnpm add -D claude-code-validator
 ```
 
 ### Step 2: Create your first rule
@@ -37,7 +38,7 @@ bun install
 Create `.claude/rules/no-console.ts`:
 
 ```typescript
-import { defineCodeRule } from '../claude-code-validator';
+import { defineCodeRule } from 'claude-code-validator';
 
 export const noConsole = defineCodeRule({
   name: 'no-console',
@@ -60,8 +61,29 @@ That's it! The rule is automatically discovered.
 
 Create `.claude/settings.local.json`:
 
-```bash
-cp .claude/claude-code-validator/.claude/settings.example.json .claude/settings.local.json
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [{
+          "type": "command",
+          "command": "bunx claude-code-validator validate",
+          "timeout": 10
+        }]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [{
+          "type": "command",
+          "command": "bunx claude-code-validator validate",
+          "timeout": 10
+        }]
+      }
+    ]
+  }
+}
 ```
 
 This enables validation on every code change before Claude writes it.
@@ -248,7 +270,7 @@ your-project/
 Most users only need `defineCodeRule()`:
 
 ```typescript
-import { defineCodeRule } from '../claude-code-validator';
+import { defineCodeRule } from 'claude-code-validator';
 
 export const myRule = defineCodeRule({
   name: 'rule-name',

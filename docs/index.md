@@ -64,10 +64,15 @@ Easy to unit test your validation rules with standard testing frameworks
 
 ## Quick Example
 
+Install the package:
+```bash
+npm install -D claude-code-validator
+```
+
 Create `.claude/rules/no-console.ts`:
 
 ```typescript
-import { defineCodeRule } from '../claude-code-validator';
+import { defineCodeRule } from 'claude-code-validator';
 
 export const noConsole = defineCodeRule({
   name: 'no-console',
