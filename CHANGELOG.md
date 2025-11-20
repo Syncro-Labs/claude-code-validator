@@ -1,6 +1,10 @@
 # Changelog
 
 
+## v1.0.7
+
+[compare changes](https://github.com/Syncro-Labs/claude-code-validator/compare/v1.0.6...v1.0.7)
+
 ## v1.0.6
 
 [compare changes](https://github.com/Syncro-Labs/claude-code-validator/compare/v1.0.5...v1.0.6)
