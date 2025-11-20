@@ -287,7 +287,7 @@ export const myRule = defineCodeRule({
 
 ## Real-World Examples
 
-Check `docs/4.examples/` for production-ready validation rules:
+Check the documentation for production-ready validation rules:
 - **Nuxt UI** - Enforce v4 migration patterns
 - **Vue defineModel** - Replace old prop patterns
 - **Security** - Block common vulnerabilities

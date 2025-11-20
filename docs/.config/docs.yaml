@@ -4,16 +4,16 @@ name: 'Claude Code Validator'
 shortDescription: 'Extensible validation framework for Claude Code hooks'
 description: 'An extensible, TypeScript-based validation framework designed for Claude Code hooks. Build custom code validators with ease using a hookable, rule-based architecture.'
 github: 'Syncro-Labs/claude-code-validator'
-url: 'https://syncro-labs.github.io/claude-code-validator'
+url: 'https://claude-code-validator.pages.dev'
 # redirects:
 #   "/from": "/to"
 # automd: true
-landing:
-  heroLinks:
-    github:
-      icon: 'i-simple-icons-github'
-      to: 'https://github.com/Syncro-Labs/claude-code-validator'
-  contributors: true
-  # features:
-  #   - title:
-  #     description:
+# landing:
+#   heroLinks:
+#     github:
+#       icon: 'i-simple-icons-github'
+#       to: 'https://github.com/Syncro-Labs/claude-code-validator'
+#   contributors: true
+#   # features:
+#   #   - title:
+#   #     description:
