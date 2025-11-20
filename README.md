@@ -26,11 +26,11 @@ Claude Code Validator helps you prevent common mistakes by checking code **befor
 
 ```bash
 # Install as a dev dependency in your project
-npm install -D claude-code-validator
+npm install -D @syncrolabs/claude-code-validator
 # or
-bun add -d claude-code-validator
+bun add -d @syncrolabs/claude-code-validator
 # or
-pnpm add -D claude-code-validator
+pnpm add -D @syncrolabs/claude-code-validator
 ```
 
 ### Step 2: Create your first rule
@@ -38,7 +38,7 @@ pnpm add -D claude-code-validator
 Create `.claude/rules/no-console.ts`:
 
 ```typescript
-import { defineCodeRule } from 'claude-code-validator';
+import { defineCodeRule } from '@syncrolabs/claude-code-validator';
 
 export const noConsole = defineCodeRule({
   name: 'no-console',
@@ -270,7 +270,7 @@ your-project/
 Most users only need `defineCodeRule()`:
 
 ```typescript
-import { defineCodeRule } from 'claude-code-validator';
+import { defineCodeRule } from '@syncrolabs/claude-code-validator';
 
 export const myRule = defineCodeRule({
   name: 'rule-name',

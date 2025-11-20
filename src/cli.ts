@@ -1,24 +1,24 @@
 #!/usr/bin/env bun
-import { defineCommand, runMain } from 'citty';
-import { defineCodeValidator } from './core/validator';
-import { loadRules } from './utils/rule-loader';
-import path from 'path';
+import { defineCommand, runMain } from "citty";
+import { defineCodeValidator } from "./core/validator";
+import { loadRules } from "./utils/rule-loader";
+import path from "path";
 
 const validateCommand = defineCommand({
   meta: {
-    description: 'Validate code from Claude Code hooks'
+    description: "Validate code from Claude Code hooks",
   },
   args: {
     stdin: {
-      type: 'boolean',
-      description: 'Read input from stdin (for hooks)',
-      default: true
+      type: "boolean",
+      description: "Read input from stdin (for hooks)",
+      default: true,
     },
     rulesDir: {
-      type: 'string',
-      description: 'Directory containing validation rules',
-      default: '.claude/rules'
-    }
+      type: "string",
+      description: "Directory containing validation rules",
+      default: ".claude/rules",
+    },
   },
   async run({ args }) {
     const validator = defineCodeValidator();
@@ -45,12 +45,12 @@ const validateCommand = defineCommand({
         const stdinText = await Bun.stdin.text();
         input = JSON.parse(stdinText);
       } catch (error) {
-        console.error('❌ Failed to parse stdin input');
+        console.error("❌ Failed to parse stdin input");
         console.error(error);
         process.exit(1);
       }
     } else {
-      console.error('❌ --stdin is required');
+      console.error("❌ --stdin is required");
       process.exit(1);
     }
 
@@ -64,19 +64,19 @@ const validateCommand = defineCommand({
 
     // Success
     process.exit(0);
-  }
+  },
 });
 
 const listRulesCommand = defineCommand({
   meta: {
-    description: 'List all discovered validation rules'
+    description: "List all discovered validation rules",
   },
   args: {
     rulesDir: {
-      type: 'string',
-      description: 'Directory containing validation rules',
-      default: '.claude/rules'
-    }
+      type: "string",
+      description: "Directory containing validation rules",
+      default: ".claude/rules",
+    },
   },
   async run({ args }) {
     const rulesPath = path.resolve(process.cwd(), args.rulesDir);
@@ -88,24 +88,26 @@ const listRulesCommand = defineCommand({
       return;
     }
 
-    console.log(`\n📋 Discovered ${rules.length} Validation Rules from ${args.rulesDir}:\n`);
+    console.log(
+      `\n📋 Discovered ${rules.length} Validation Rules from ${args.rulesDir}:\n`
+    );
     for (const rule of rules) {
       console.log(`  • ${rule.name}`);
       console.log(`    ${rule.description}\n`);
     }
-  }
+  },
 });
 
 const main = defineCommand({
   meta: {
-    name: 'claude-code-validator',
-    description: 'Extensible validation framework for Claude Code hooks',
-    version: '1.0.0'
+    name: "@syncrolabs/claude-code-validator",
+    description: "Extensible validation framework for Claude Code hooks",
+    version: "1.0.0",
   },
   subCommands: {
     validate: validateCommand,
-    'list-rules': listRulesCommand
-  }
+    "list-rules": listRulesCommand,
+  },
 });
 
 runMain(main);

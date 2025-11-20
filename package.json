@@ -1,9 +1,9 @@
 {
-  "name": "claude-code-validator",
+  "name": "@syncrolabs/claude-code-validator",
   "version": "1.0.0",
   "type": "module",
   "description": "Extensible validation framework for Claude Code hooks",
-  "author": "Syncro Labs",
+  "author": "SyncroLabs",
   "main": "src/index.ts",
   "bin": {
     "claude-code-validator": "./src/cli.ts"
@@ -15,7 +15,6 @@
   },
   "files": [
     "src",
-    "docs",
     "README.md",
     "LICENSE"
   ],
@@ -23,7 +22,8 @@
     "validate": "bun src/cli.ts validate --stdin",
     "list-rules": "bun src/cli.ts list-rules",
     "typecheck": "tsc --noEmit",
-    "test": "echo \"Error: no test runner configured\" && exit 1"
+    "test": "bun run typecheck",
+    "release": "bun run test && changelogen --release --push"
   },
   "keywords": [
     "claude-code",
@@ -48,6 +48,7 @@
     "glob": "^11.0.0"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "changelogen": "^0.5.7"
   }
 }

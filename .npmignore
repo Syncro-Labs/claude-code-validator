@@ -1,0 +1,28 @@
+# Development files
+*.log
+*.tsbuildinfo
+.DS_Store
+
+# Development directories
+node_modules/
+.github/
+.claude/
+docs/
+dist/
+build/
+
+# Git files
+.git/
+.gitignore
+
+# Documentation (available online)
+*.md
+!README.md
+
+# Config files
+tsconfig.json
+.editorconfig
+
+# Data and cache
+.data/
+*.cache

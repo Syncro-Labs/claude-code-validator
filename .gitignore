@@ -6,3 +6,6 @@ dist/
 build/
 *.tsbuildinfo
 .data/
+
+FIRST_PUBLISH.md
+PUBLISHING.md

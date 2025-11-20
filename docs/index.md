@@ -65,25 +65,26 @@ Easy to unit test your validation rules with standard testing frameworks
 ## Quick Example
 
 Install the package:
+
 ```bash
-npm install -D claude-code-validator
+npm install -D @syncrolabs/claude-code-validator
 ```
 
 Create `.claude/rules/no-console.ts`:
 
 ```typescript
-import { defineCodeRule } from 'claude-code-validator';
+import { defineCodeRule } from "@syncrolabs/claude-code-validator";
 
 export const noConsole = defineCodeRule({
-  name: 'no-console',
-  description: 'Block console.log in production',
-  shouldRun: (context) => context.filePath.endsWith('.ts'),
+  name: "no-console",
+  description: "Block console.log in production",
+  shouldRun: (context) => context.filePath.endsWith(".ts"),
   validate(context) {
-    if (context.content.includes('console.log')) {
-      return ['❌ Use proper logging instead of console.log'];
+    if (context.content.includes("console.log")) {
+      return ["❌ Use proper logging instead of console.log"];
     }
     return [];
-  }
+  },
 });
 ```
 
