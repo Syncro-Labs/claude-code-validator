@@ -1,18 +1,11 @@
 {
   "hooks": {
-    "SessionStart": [
-      {
-        "type": "command",
-        "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/SessionStart",
-        "timeout": 30
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Edit",
         "hooks": [{
           "type": "command",
-          "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/claude-code-validator/validate validate --stdin",
+          "command": "bunx claude-code-validator validate --stdin",
           "timeout": 10
         }]
       },
@@ -20,7 +13,7 @@
         "matcher": "Write",
         "hooks": [{
           "type": "command",
-          "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/claude-code-validator/validate validate --stdin",
+          "command": "bunx claude-code-validator validate --stdin",
           "timeout": 10
         }]
       }

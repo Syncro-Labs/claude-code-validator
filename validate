@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-# Wrapper script for claude-code-validator CLI
-# Executes the CLI from the package directory
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec bun "$SCRIPT_DIR/src/cli.ts" "$@"

@@ -56,17 +56,15 @@ export const noConsole = defineCodeRule({
 
 That's it! The rule is automatically discovered.
 
-### Step 3: Enable automatic setup
+### Step 3: Enable validation hooks
+
+Create `.claude/settings.local.json`:
 
 ```bash
-# Copy example settings
-cp .claude/settings.example.json .claude/settings.local.json
+cp .claude/claude-code-validator/.claude/settings.example.json .claude/settings.local.json
 ```
 
-This enables:
-- Auto-installation of dependencies
-- Validation on every code change
-- Type checking before sessions start
+This enables validation on every code change before Claude writes it.
 
 ## How It Works
 
@@ -85,19 +83,12 @@ Your `.claude/settings.local.json` should look like this:
 ```json
 {
   "hooks": {
-    "SessionStart": [
-      {
-        "type": "command",
-        "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/SessionStart",
-        "timeout": 30
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Edit",
         "hooks": [{
           "type": "command",
-          "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/claude-code-validator/validate validate --stdin",
+          "command": "bunx claude-code-validator validate --stdin",
           "timeout": 10
         }]
       },
@@ -105,7 +96,7 @@ Your `.claude/settings.local.json` should look like this:
         "matcher": "Write",
         "hooks": [{
           "type": "command",
-          "command": "bash ${CLAUDE_PROJECT_DIR}/.claude/claude-code-validator/validate validate --stdin",
+          "command": "bunx claude-code-validator validate --stdin",
           "timeout": 10
         }]
       }
@@ -118,13 +109,11 @@ Your `.claude/settings.local.json` should look like this:
 
 ```bash
 # List all discovered rules
-bun run list-rules
+bunx claude-code-validator list-rules
 
 # Manually validate from stdin (for testing)
-bun run validate
-
-# Type check the codebase
-bun run typecheck
+echo '{"tool_name":"Write","tool_input":{"file_path":"test.ts","content":"test"}}' | \
+  bunx claude-code-validator validate --stdin
 ```
 
 ## Writing Rules
